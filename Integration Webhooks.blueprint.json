@@ -1,0 +1,310 @@
+{
+    "name": "Integration Webhooks",
+    "flow": [
+        {
+            "id": 1,
+            "module": "gateway:CustomWebHook",
+            "version": 1,
+            "parameters": {
+                "hook": 2922746,
+                "maxResults": 1
+            },
+            "mapper": {},
+            "metadata": {
+                "designer": {
+                    "x": -1139,
+                    "y": 54,
+                    "name": "Clinica-Eventos"
+                },
+                "setupValidation": {
+                    "version": 1,
+                    "configuration": "c12d8c92ad74022d",
+                    "result": {
+                        "valid": true,
+                        "fields": []
+                    }
+                },
+                "restore": {
+                    "parameters": {
+                        "hook": {
+                            "data": {
+                                "editable": "true"
+                            },
+                            "label": "Clinica-eventos"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "hook",
+                        "type": "hook:gateway-webhook",
+                        "label": "Webhook",
+                        "required": true
+                    },
+                    {
+                        "name": "maxResults",
+                        "type": "number",
+                        "label": "Maximum number of results"
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "tipo_evento",
+                        "type": "text"
+                    },
+                    {
+                        "name": "nombre",
+                        "type": "text"
+                    },
+                    {
+                        "name": "email",
+                        "type": "text"
+                    },
+                    {
+                        "name": "telefono",
+                        "type": "text"
+                    },
+                    {
+                        "name": "mensaje",
+                        "type": "text"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 4,
+            "module": "builtin:BasicRouter",
+            "version": 1,
+            "mapper": null,
+            "metadata": {
+                "designer": {
+                    "x": -839,
+                    "y": 54
+                }
+            },
+            "routes": [
+                {
+                    "flow": [
+                        {
+                            "id": 12,
+                            "module": "util:SetVariable2",
+                            "version": 1,
+                            "parameters": {},
+                            "filter": {
+                                "name": "Formal/Gmail",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{1.tipo_evento}}",
+                                            "b": "alta_paciente",
+                                            "o": "text:equal"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "a": "{{1.tipo_evento}}",
+                                            "b": "reporte_mesual",
+                                            "o": "text:equal"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": {
+                                "name": "canal_gmail",
+                                "value": "GMAIL: enviar correo a {{1.email}} - {{1.mensaje}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": -508,
+                                    "y": -223,
+                                    "name": "Gmail. Enviar email"
+                                },
+                                "setupValidation": {
+                                    "version": 1,
+                                    "configuration": "ec8494e0e1d0ad71",
+                                    "result": {
+                                        "valid": true,
+                                        "fields": []
+                                    }
+                                },
+                                "restore": {},
+                                "expect": [
+                                    {
+                                        "name": "name",
+                                        "type": "text",
+                                        "label": "Variable name",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "value",
+                                        "type": "any",
+                                        "label": "Variable value"
+                                    }
+                                ],
+                                "interface": [
+                                    {
+                                        "name": "canal_gmail",
+                                        "label": "canal_gmail",
+                                        "type": "any"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "flow": [
+                        {
+                            "id": 15,
+                            "module": "util:SetVariable2",
+                            "version": 1,
+                            "parameters": {},
+                            "filter": {
+                                "name": "Paciente/Whatsapp",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{1.tipo_evento}}",
+                                            "o": "text:equal",
+                                            "b": "confirmacion_cirugia"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": {
+                                "name": "canal_whatsapp",
+                                "value": "WHATSAPP a {{1.telefono}}: confirme ayuno de 8 h"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": -482,
+                                    "y": 349,
+                                    "name": "Whatsapp. Enviar Mensaje"
+                                },
+                                "setupValidation": {
+                                    "version": 1,
+                                    "configuration": "b39ad3316b5b87d9",
+                                    "result": {
+                                        "valid": true,
+                                        "fields": []
+                                    }
+                                },
+                                "restore": {},
+                                "expect": [
+                                    {
+                                        "name": "name",
+                                        "type": "text",
+                                        "label": "Variable name",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "value",
+                                        "type": "any",
+                                        "label": "Variable value"
+                                    }
+                                ],
+                                "interface": [
+                                    {
+                                        "name": "canal_whatsapp",
+                                        "type": "any",
+                                        "label": "canal_whatsapp"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "flow": [
+                        {
+                            "id": 14,
+                            "module": "util:SetVariable2",
+                            "version": 1,
+                            "parameters": {},
+                            "filter": {
+                                "name": "Interno/Slack",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{1.tipo_evento}}",
+                                            "b": "alerta_interna",
+                                            "o": "text:equal"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "a": "{{1.tipo_evento}}",
+                                            "b": "urgencia_detectada",
+                                            "o": "text:equal"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": {
+                                "name": "Canal_Slack",
+                                "value": "SLACK #alertas-recepcion: {{1.telefono}} - {{1.mensaje}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": -439,
+                                    "y": 53,
+                                    "name": "Slack. Crear Mensaje"
+                                },
+                                "setupValidation": {
+                                    "version": 1,
+                                    "configuration": "7f2da62e318834a7",
+                                    "result": {
+                                        "valid": true,
+                                        "fields": []
+                                    }
+                                },
+                                "restore": {},
+                                "expect": [
+                                    {
+                                        "name": "name",
+                                        "type": "text",
+                                        "label": "Variable name",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "value",
+                                        "type": "any",
+                                        "label": "Variable value"
+                                    }
+                                ],
+                                "interface": [
+                                    {
+                                        "name": "Canal_Slack",
+                                        "type": "any",
+                                        "label": "Canal_Slack"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "metadata": {
+        "instant": true,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "us2.make.com",
+        "notes": []
+    }
+}
